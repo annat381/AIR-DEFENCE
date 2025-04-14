@@ -12,18 +12,18 @@ int main()
     RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "h", sf::Style::Fullscreen);
 
     Texture textureBackground;
-    textureBackground.loadFromFile("whitescreen.jpg");
+    textureBackground.loadFromFile("./images/nightsky.jpg");
     Sprite spriteBackground;
     spriteBackground.setTexture(textureBackground);
-    spriteBackground.setTextureRect(IntRect(0, 0, 1920, 1080));
+    spriteBackground.setTextureRect(IntRect(0, 0, WIDTH, HEIGHT));
     spriteBackground.setPosition(0, 0);
 
     Texture textureTest;
-    textureTest.loadFromFile("arrow.jpg");
+    textureTest.loadFromFile("./images/b17.png");
     Sprite spriteTest;
     spriteTest.setTexture(textureTest);
-    spriteTest.setTextureRect(IntRect(0, 0, 100, 100));
-    spriteTest.setPosition(200, 200);
+    spriteTest.setTextureRect(IntRect(0, 0, 176, 136));
+    spriteTest.setPosition(1000, 500);
 
     while (window.isOpen())
 	{
@@ -38,7 +38,7 @@ int main()
 		if (Keyboard::isKeyPressed(Keyboard::Escape)) { window.close();}
 		/*if (Keyboard::isKeyPressed(Keyboard::Up)) { spriteHare.move(0, -1); }
 		if (Keyboard::isKeyPressed(Keyboard::Down)) { spriteHare.move(0, 1); }*/
-        spriteTest.move(10, 0);
+        //spriteTest.move(-10, 0);
 
         window.clear();
         window.draw(spriteBackground);
