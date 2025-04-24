@@ -1,20 +1,20 @@
 #include <cmath>
 #include <vector>
 #include <SFML/Graphics.hpp>
-#include "plane.h"
-#include "projectile.h"
+#include "B17.cpp"
+#include "Projectile.cpp"
 using namespace sf;
+
+const int MAX_AMOUNT_OF_OBJECTS = 1000;
 
 const int HEIGHT = 1080;
 const int WIDTH = 1920;
 
-const int L_JU87 = 90;
-const int H_JU87 = 51;
-const int L_B17 = 176;
-const int H_B17 = 136;
+//const int L_JU87 = 90;
+//const int H_JU87 = 51;
+//const int L_B17 = 176;
+//const int H_B17 = 136;
 
-//std::vector<plane> planes;
-//std::vector<projectile> projectiles;
 
 
 
@@ -36,12 +36,10 @@ int main()
     spriteTest.setTextureRect(IntRect(0, 0, 176, 136));
     spriteTest.setPosition(1000, 500);*/
 
-    Texture textureTest;
-    textureTest.loadFromFile("./images/planes/b17.png");
-    Sprite spriteTest;
-    spriteTest.setTexture(textureTest);
-    spriteTest.setTextureRect(IntRect(0, 0, L_B17, H_B17));
-    spriteTest.setPosition(1000, 500);
+
+    B17 test;
+
+    std::vector<B17> planesB17 = {test};
 
     while (window.isOpen())
 	{
@@ -60,7 +58,12 @@ int main()
 
         window.clear();
         window.draw(spriteBackground);
-        window.draw(spriteTest);
+
+        for (unsigned long int i = 0; i < planesB17.size(); i++)
+        {
+            window.draw(planesB17[i].sprite);
+        }
+
         window.display();
 	}
 }
