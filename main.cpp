@@ -36,10 +36,11 @@ int main()
     spriteTest.setTextureRect(IntRect(0, 0, 176, 136));
     spriteTest.setPosition(1000, 500);*/
 
-
     B17 test;
 
     std::vector<B17> planesB17 = {test};
+
+    Projectile shell(80);
 
     while (window.isOpen())
 	{
@@ -61,8 +62,11 @@ int main()
 
         for (unsigned long int i = 0; i < planesB17.size(); i++)
         {
-            window.draw(planesB17[i].sprite);
+            window.draw(planesB17[i].spriteB17);
         }
+
+        window.draw(shell.spriteProjectile);
+        shell.upd();
 
         window.display();
 	}

@@ -9,14 +9,14 @@ class B17
 public:
     bool destroyed;
     int speed;
-    Texture texture;
-    Sprite sprite;
+    Texture textureB17;
+    Sprite spriteB17;
 
     B17()
     {
-        texture.loadFromFile("./images/planes/b17.png");
-        sprite.setTexture(texture);
-        sprite.setTextureRect(IntRect(0, 0, L_B17, H_B17));
-        sprite.setPosition(1000, 500);
+        textureB17.loadFromFile("./images/planes/b17.png");
+        spriteB17.setTexture(textureB17);
+        spriteB17.setTextureRect(IntRect(0, 0, L_B17, H_B17));
+        spriteB17.setPosition(1000, 500);
     }
 };
