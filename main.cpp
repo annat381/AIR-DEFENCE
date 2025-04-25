@@ -1,6 +1,6 @@
 #include <cmath>
 #include <vector>
-#include <iostream>
+#include <chrono>
 #include <SFML/Graphics.hpp>
 #include "B17.cpp"
 #include "Projectile.cpp"
@@ -68,7 +68,6 @@ int main()
         {
             window.draw(prj[0].spriteProjectile);
             prj[0].upd();
-
         }
 
         window.display();
