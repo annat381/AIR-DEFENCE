@@ -1,5 +1,6 @@
 #include <cmath>
 #include <vector>
+#include <iostream>
 #include <SFML/Graphics.hpp>
 #include "B17.cpp"
 #include "Projectile.cpp"
@@ -14,7 +15,6 @@ const int WIDTH = 1920;
 //const int H_JU87 = 51;
 //const int L_B17 = 176;
 //const int H_B17 = 136;
-
 
 
 
@@ -36,11 +36,7 @@ int main()
     spriteTest.setTextureRect(IntRect(0, 0, 176, 136));
     spriteTest.setPosition(1000, 500);*/
 
-    B17 test;
-
-    std::vector<B17> planesB17 = {test};
-
-    Projectile shell(80);
+    std::vector<Projectile> prj = {};
 
     while (window.isOpen())
 	{
@@ -50,23 +46,30 @@ int main()
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}
-        //if (Keyboard::isKeyPressed(Keyboard::F)) { spriteTest.move(1, 0); }
-		//if (Keyboard::isKeyPressed(Keyboard::S)) { spriteTest.move(-1, 0); }
-		if (Keyboard::isKeyPressed(Keyboard::Escape)) { window.close();}
-		/*if (Keyboard::isKeyPressed(Keyboard::Up)) { spriteHare.move(0, -1); }
-		if (Keyboard::isKeyPressed(Keyboard::Down)) { spriteHare.move(0, 1); }*/
-        //spriteTest.move(-10, 0);
+
+		if (Keyboard::isKeyPressed(Keyboard::Escape))
+        {
+            window.close();
+        }
+
+		if (Keyboard::isKeyPressed(Keyboard::Space))
+        {
+            if (prj.size() == 0)
+            {
+                Projectile tst(89);
+                prj.push_back(tst);
+            }
+        }
 
         window.clear();
         window.draw(spriteBackground);
 
-        for (unsigned long int i = 0; i < planesB17.size(); i++)
+        if (prj.size() == 1)
         {
-            window.draw(planesB17[i].spriteB17);
-        }
+            window.draw(prj[0].spriteProjectile);
+            prj[0].upd();
 
-        window.draw(shell.spriteProjectile);
-        shell.upd();
+        }
 
         window.display();
 	}
