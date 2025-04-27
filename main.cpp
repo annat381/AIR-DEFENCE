@@ -16,8 +16,6 @@ const int WIDTH = 1920;
 //const int L_B17 = 176;
 //const int H_B17 = 136;
 
-int counter = 0;
-
 
 
 int main()
@@ -60,7 +58,7 @@ int main()
         {
             if (prj.size() == 0)
             {
-                Projectile tst(45);
+                Projectile tst(89);
                 prj.push_back(tst);
             }
         }
@@ -79,6 +77,5 @@ int main()
         }
 
         window.display();
-        counter += 1;
 	}
 }
