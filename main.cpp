@@ -16,6 +16,8 @@ const int WIDTH = 1920;
 //const int L_B17 = 176;
 //const int H_B17 = 136;
 
+int counter = 0;
+
 
 
 int main()
@@ -40,7 +42,9 @@ int main()
 
     while (window.isOpen())
 	{
-		sf::Event event;
+	    auto t1 = std::chrono::high_resolution_clock::now();
+
+	    sf::Event event;
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
@@ -56,7 +60,7 @@ int main()
         {
             if (prj.size() == 0)
             {
-                Projectile tst(89);
+                Projectile tst(45);
                 prj.push_back(tst);
             }
         }
@@ -64,12 +68,17 @@ int main()
         window.clear();
         window.draw(spriteBackground);
 
+        auto t2 = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> duration = t2 - t1;
+        double dt = duration.count();
+
         if (prj.size() == 1)
         {
             window.draw(prj[0].spriteProjectile);
-            prj[0].upd();
+            prj[0].upd(dt);
         }
 
         window.display();
+        counter += 1;
 	}
 }
