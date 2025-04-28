@@ -2,6 +2,7 @@
 #include <vector>
 #include <chrono>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "B17.cpp"
 #include "Projectile.cpp"
 using namespace sf;
@@ -21,6 +22,13 @@ const int WIDTH = 1920;
 int main()
 {
     RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "h", sf::Style::Fullscreen);
+
+    sf::SoundBuffer buffer;
+    if (!buffer.loadFromFile("./audio/cannon/shot.wav")) {
+        return -1;
+    }
+    sf::Sound shotSound;
+    shotSound.setBuffer(buffer);
 
     Texture textureBackground;
     textureBackground.loadFromFile("./images/landscape/nightsky.jpg");
@@ -60,6 +68,7 @@ int main()
             {
                 Projectile tst(89);
                 prj.push_back(tst);
+                shotSound.play();
             }
         }
 
