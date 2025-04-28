@@ -3,29 +3,44 @@
 #include <chrono>
 using namespace sf;
 
-class projectile
+class Projectile
 {
 public:
-    int damage;
     int x;
     int y;
+    double v;
     double vx;
     double vy;
-    double k;
-    Texture textureShell;
-    Sprite spriteShell;
+    double k = 0.1;
+    Texture textureProjectile;
+    Sprite spriteProjectile;
 
-    void spawn()
+    Projectile(double angle)
     {
-
+        v = 10;
+        x = 0;
+        y = 1077;
+        vx = v * std::cos(angle * 3.14159 / 180);
+        vy = -1 * v * std::sin(angle * 3.14159 / 180);
+        textureProjectile.loadFromFile("./images/yellow.jpg");
+        spriteProjectile.setTexture(textureProjectile);
+        spriteProjectile.setTextureRect(IntRect(0, 0, 5, 5));
+        spriteProjectile.setPosition(x, y);
     }
 
-    void upd(double t1, double t2)
+    void upd(double t)
     {
-        vv = vx.cmath::pow(2) + vy.cmath::pow(2);
-        vx = vx - k * vv * (vx / vv.cmath::pow(0.5));
-        vy = vy - k * vv * (vy / vv.cmath::pow(0.5));
-        x += vx * (t2 - t1);
-        y += vy * (t2 - t1);
+        double sn = - vy / v;
+        double cs = vx / v;
+        v = v - k * v * v * t;
+        vx = v * cs;
+        vy += k * v * v * t * sn + 0.05;
+        spriteProjectile.move(vx, vy);
+    }
+
+    void upd()
+    {
+        vy += 0.05;
+        spriteProjectile.move(vx, vy);
     }
 };
