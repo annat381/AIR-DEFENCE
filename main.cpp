@@ -24,7 +24,8 @@ int main()
     RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "h", sf::Style::Fullscreen);
 
     sf::SoundBuffer buffer;
-    if (!buffer.loadFromFile("./audio/cannon/shot.wav")) {
+    if (!buffer.loadFromFile("./audio/cannon/shot.wav"))
+    {
         return -1;
     }
     sf::Sound shotSound;
@@ -46,9 +47,12 @@ int main()
 
     std::vector<Projectile> prj = {};
 
+    auto last_shot = std::chrono::high_resolution_clock::now();
+
     while (window.isOpen())
 	{
 	    auto t1 = std::chrono::high_resolution_clock::now();
+	    auto current_time = std::chrono::high_resolution_clock::now();
 
 	    sf::Event event;
 		while (window.pollEvent(event))
@@ -64,11 +68,15 @@ int main()
 
 		if (Keyboard::isKeyPressed(Keyboard::Space))
         {
-            if (prj.size() == 0)
+            std::chrono::duration<double> duration_btw_shots = current_time - last_shot;
+            double time_btw_shots = duration_btw_shots.count();
+
+            if (time_btw_shots > 3)
             {
-                Projectile tst(89);
-                prj.push_back(tst);
                 shotSound.play();
+                Projectile tst1(45);
+                prj.push_back(tst1);
+                last_shot = std::chrono::high_resolution_clock::now();
             }
         }
 
@@ -79,10 +87,13 @@ int main()
         std::chrono::duration<double> duration = t2 - t1;
         double dt = duration.count();
 
-        if (prj.size() == 1)
+        if (prj.size() > 0)
         {
-            window.draw(prj[0].spriteProjectile);
-            prj[0].upd(dt);
+            for (int i = 0; i < prj.size(); i++)
+            {
+                window.draw(prj[i].spriteProjectile);
+                prj[i].upd(dt);
+            }
         }
 
         window.display();
