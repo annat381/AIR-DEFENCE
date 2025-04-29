@@ -31,17 +31,15 @@ int main()
     //static array of projectiles
     Projectile arr[2];
 
-    //opening window
-    RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "h", sf::Style::Fullscreen);
-
-    //sound for cannon
+    //shot sound
     sf::SoundBuffer buffer;
-    if (!buffer.loadFromFile("./audio/cannon/shot.wav"))
-    {
-        return -1;
-    }
+    buffer.loadFromFile("./audio/cannon/shot.wav");
     sf::Sound shotSound;
     shotSound.setBuffer(buffer);
+
+    //opening window
+    RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "h", sf::Style::Fullscreen);
+    window.setFramerateLimit(60);
 
     //creating background
     Texture textureBackground;
@@ -58,6 +56,7 @@ int main()
     spriteBarrel.setTexture(textureBarrel);
     spriteBarrel.setTextureRect(IntRect(0, 0, BARREL_L, BARREL_H));
     spriteBarrel.setPosition(30, 1040);
+    spriteBarrel.rotate(359.5);
 
     int counter = 0;
     int number_of_shots = 0;
@@ -80,8 +79,8 @@ int main()
             if (time_btw_shots > 3)
             {
                 shotSound.play();
-                Projectile tst1(-1 * spriteBarrel.getRotation());
-                arr[counter] = tst1;
+                Projectile p(-1 * spriteBarrel.getRotation());
+                arr[counter] = p;
                 if (counter == 0)
                 {
                     counter = 1;
@@ -103,14 +102,22 @@ int main()
             window.close();
         }
 
-        if (Keyboard::isKeyPressed(Keyboard::S))
+        if (Keyboard::isKeyPressed(Keyboard::S) and spriteBarrel.getRotation() >= 270)
         {
             spriteBarrel.rotate(-0.25);
+            if (spriteBarrel.getRotation() < 270)
+            {
+                spriteBarrel.setRotation(270);
+            }
         }
 
-        if (Keyboard::isKeyPressed(Keyboard::F))
+        if (Keyboard::isKeyPressed(Keyboard::F) and spriteBarrel.getRotation() <= 359.5)
         {
             spriteBarrel.rotate(0.25);
+            if (spriteBarrel.getRotation() > 359.5)
+            {
+                spriteBarrel.setRotation(359.5);
+            }
         }
 
         window.clear();
@@ -118,6 +125,7 @@ int main()
 
         double time_for_upd = current_time.getElapsedTime().asMicroseconds();
         time_for_upd = time_for_upd / 1000000;
+        current_time.restart();
 
         if (number_of_shots > 0)
         {
@@ -130,6 +138,5 @@ int main()
 
         window.draw(spriteBarrel);
         window.display();
-        current_time.restart();
 	}
 }
