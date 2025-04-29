@@ -14,7 +14,7 @@ const int WIDTH = 1920;
 const int BARREL_L = 200;
 const int BARREL_H = 15;
 
-const int N = 1000;
+const int N = 2;
 
 //const int L_JU87 = 90;
 //const int H_JU87 = 51;
@@ -29,7 +29,7 @@ Clock current_time;
 int main()
 {
     //static array of projectiles
-    Projectile arr[N];
+    Projectile arr[2];
 
     //opening window
     RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "h", sf::Style::Fullscreen);
@@ -60,6 +60,7 @@ int main()
     spriteBarrel.setPosition(30, 1040);
 
     int counter = 0;
+    int number_of_shots = 0;
 
     while (window.isOpen())
 	{
@@ -81,8 +82,19 @@ int main()
                 shotSound.play();
                 Projectile tst1(-1 * spriteBarrel.getRotation());
                 arr[counter] = tst1;
-                counter += 1;
+                if (counter == 0)
+                {
+                    counter = 1;
+                }
+                else
+                {
+                    counter = 0;
+                }
                 last_shot.restart();
+                if (number_of_shots < 2)
+                {
+                    number_of_shots += 1;
+                }
             }
         }
 
@@ -107,9 +119,9 @@ int main()
         double time_for_upd = current_time.getElapsedTime().asMicroseconds();
         time_for_upd = time_for_upd / 1000000;
 
-        if (counter > 0)
+        if (number_of_shots > 0)
         {
-            for (int i = 0; i < counter; i++)
+            for (int i = 0; i < number_of_shots; i++)
             {
                 window.draw(arr[i].spriteProjectile);
                 arr[i].upd(time_for_upd);
