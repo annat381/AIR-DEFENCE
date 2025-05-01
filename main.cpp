@@ -29,12 +29,12 @@ Clock current_time;
 int main()
 {
     //static array of projectiles
-    Projectile arr[2];
+    Projectile arr[3];
 
     //shot sound
-    sf::SoundBuffer buffer;
+    SoundBuffer buffer;
     buffer.loadFromFile("./audio/cannon/shot.wav");
-    sf::Sound shotSound;
+    Sound shotSound;
     shotSound.setBuffer(buffer);
 
     //opening window
@@ -79,18 +79,26 @@ int main()
             if (time_btw_shots > 3)
             {
                 shotSound.play();
-                Projectile p(-1 * spriteBarrel.getRotation());
+
+                Projectile p(-spriteBarrel.getRotation());
                 arr[counter] = p;
+
                 if (counter == 0)
                 {
                     counter = 1;
+                }
+                else if (counter == 1)
+                {
+                    counter = 2;
                 }
                 else
                 {
                     counter = 0;
                 }
+
                 last_shot.restart();
-                if (number_of_shots < 2)
+
+                if (number_of_shots < 3)
                 {
                     number_of_shots += 1;
                 }
