@@ -22,6 +22,8 @@ const int MAX_AMOUNT_OF_PROJECTILES = 3; //don't make too big or small; that num
 const int B17_MAX_VX = 10;
 const int B17_MIN_VX = 7;
 const int B17_ABS_MAX_OF_VY = 1;
+const int B17_H_MIN = 275;
+const int B17_H_MAX = 400;
 
 
 
@@ -37,7 +39,7 @@ int main()
 
     //static array of B17
     B17 arr_B17[1];
-    B17 plane(rnd_int(-B17_MAX_VX, -B17_MIN_VX), rnd_int(-B17_ABS_MAX_OF_VY, B17_ABS_MAX_OF_VY), rnd_int(0, 400));
+    B17 plane(rnd_int(-B17_MAX_VX, -B17_MIN_VX), rnd_int(-B17_ABS_MAX_OF_VY, B17_ABS_MAX_OF_VY), rnd_int(B17_H_MIN, B17_H_MAX));
     arr_B17[0] = plane;
 
     //shot sound
