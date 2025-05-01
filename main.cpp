@@ -6,15 +6,14 @@
 #include "Projectile.cpp"
 using namespace sf;
 
-const int MAX_AMOUNT_OF_OBJECTS = 1000;
-
 const int HEIGHT = 1080;
 const int WIDTH = 1920;
 
 const int BARREL_L = 200;
 const int BARREL_H = 15;
 
-const int N = 2;
+const double reload_time = 0.25; //don't make too small; it's minimal time between shots
+const int max_amount_of_projectiles = 50; //don't make too big or small; that number shows how much projectiles can be drawn, oldest are replaced by new
 
 //const int L_JU87 = 90;
 //const int H_JU87 = 51;
@@ -29,7 +28,7 @@ Clock current_time;
 int main()
 {
     //static array of projectiles
-    Projectile arr[3];
+    Projectile arr[max_amount_of_projectiles];
 
     //shot sound
     SoundBuffer buffer;
@@ -76,20 +75,16 @@ int main()
             double time_btw_shots = last_shot.getElapsedTime().asMicroseconds();
             time_btw_shots = time_btw_shots / 1000000;
 
-            if (time_btw_shots > 3)
+            if (time_btw_shots > reload_time)
             {
                 shotSound.play();
 
                 Projectile p(-spriteBarrel.getRotation());
                 arr[counter] = p;
 
-                if (counter == 0)
+                if (counter < (max_amount_of_projectiles - 1))
                 {
-                    counter = 1;
-                }
-                else if (counter == 1)
-                {
-                    counter = 2;
+                    counter += 1;
                 }
                 else
                 {
@@ -98,7 +93,7 @@ int main()
 
                 last_shot.restart();
 
-                if (number_of_shots < 3)
+                if (number_of_shots < max_amount_of_projectiles)
                 {
                     number_of_shots += 1;
                 }

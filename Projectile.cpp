@@ -20,7 +20,7 @@ public:
 
     Projectile(double angle)
     {
-        v = 30;
+        v = 50;
         x = 35;
         y = 1040;
         vx = v * std::cos(angle * 3.14159 / 180);
