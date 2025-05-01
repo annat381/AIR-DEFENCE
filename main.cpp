@@ -1,6 +1,8 @@
 #include <cmath>
 #include <vector>
 #include <random>
+#include <iostream>
+#include <string>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include "B17.cpp"
@@ -10,20 +12,21 @@ using namespace sf;
 //data about screen
 const int HEIGHT = 1080;
 const int WIDTH = 1920;
+const int FRAMERATE_LIMIT = 60;
 
 //data about cannon
 const int BARREL_L = 200;
 const int BARREL_H = 15;
 const double BARREL_ROTATING_SPEED = 0.35;
-const double RELOAD_TIME = 3; //don't make too small; it's minimal time between shots
-const int MAX_AMOUNT_OF_PROJECTILES = 3; //don't make too big or small; that number shows how much projectiles can be drawn, oldest are replaced by new
+double RELOAD_TIME = 3; //don't make const
+const int MAX_AMOUNT_OF_PROJECTILES = 400;
 
 //data about B17
 const int B17_MAX_VX = 10;
 const int B17_MIN_VX = 7;
-const int B17_ABS_MAX_OF_VY = 1;
-const int B17_H_MIN = 275;
-const int B17_H_MAX = 400;
+const int B17_ABS_MAX_OF_VY = 0;
+const int B17_H_MIN = 100;
+const int B17_H_MAX = 300;
 
 
 
@@ -50,7 +53,7 @@ int main()
 
     //opening window
     RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "h", sf::Style::Fullscreen);
-    window.setFramerateLimit(60);
+    window.setFramerateLimit(FRAMERATE_LIMIT);
 
     //creating background
     Texture textureBackground;
@@ -67,7 +70,7 @@ int main()
     spriteBarrel.setTexture(textureBarrel);
     spriteBarrel.setTextureRect(IntRect(0, 0, BARREL_L, BARREL_H));
     spriteBarrel.setPosition(30, 1040);
-    spriteBarrel.rotate(359.5);
+    spriteBarrel.rotate(315);
 
     int counter = 0;
     int number_of_shots = 0;
@@ -85,7 +88,7 @@ int main()
 		if (Keyboard::isKeyPressed(Keyboard::Space))
         {
             double time_btw_shots = last_shot.getElapsedTime().asMicroseconds();
-            time_btw_shots = time_btw_shots / 1000000;
+            time_btw_shots /= 1000000;
 
             if (time_btw_shots > RELOAD_TIME)
             {
@@ -132,6 +135,20 @@ int main()
             if (spriteBarrel.getRotation() > 359.5)
             {
                 spriteBarrel.setRotation(359.5);
+            }
+        }
+
+        if (Keyboard::isKeyPressed(Keyboard::H))
+        {
+            if (Keyboard::isKeyPressed(Keyboard::E))
+            {
+                if (Keyboard::isKeyPressed(Keyboard::L))
+                {
+                    if (Keyboard::isKeyPressed(Keyboard::P))
+                    {
+                        RELOAD_TIME = 0.01;
+                    }
+                }
             }
         }
 

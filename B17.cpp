@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-#include <iostream>
 #include "Projectile.cpp"
 using namespace sf;
 
