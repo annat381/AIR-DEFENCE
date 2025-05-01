@@ -15,12 +15,14 @@ public:
     double vx;
     double vy;
     double k = 0.05;
+    bool visible;
     Texture textureProjectile;
     Sprite spriteProjectile;
 
     Projectile(double angle)
     {
-        v = 50;
+        visible = true;
+        v = 25;
         x = 35;
         y = 1040;
         vx = v * std::cos(angle * 3.14159 / 180);

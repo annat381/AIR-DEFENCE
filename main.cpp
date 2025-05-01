@@ -1,24 +1,29 @@
 #include <cmath>
 #include <vector>
+#include <random>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include "B17.cpp"
-#include "Projectile.cpp"
+#include "rnd_int.cpp"
 using namespace sf;
 
+//data about screen
 const int HEIGHT = 1080;
 const int WIDTH = 1920;
 
+//data about cannon
 const int BARREL_L = 200;
 const int BARREL_H = 15;
+const double BARREL_ROTATING_SPEED = 0.35;
+const double RELOAD_TIME = 3; //don't make too small; it's minimal time between shots
+const int MAX_AMOUNT_OF_PROJECTILES = 3; //don't make too big or small; that number shows how much projectiles can be drawn, oldest are replaced by new
 
-const double reload_time = 0.25; //don't make too small; it's minimal time between shots
-const int max_amount_of_projectiles = 50; //don't make too big or small; that number shows how much projectiles can be drawn, oldest are replaced by new
+//data about B17
+const int B17_MAX_VX = 10;
+const int B17_MIN_VX = 7;
+const int B17_ABS_MAX_OF_VY = 1;
 
-//const int L_JU87 = 90;
-//const int H_JU87 = 51;
-//const int L_B17 = 176;
-//const int H_B17 = 136;
+
 
 Clock last_shot;
 Clock current_time;
@@ -28,7 +33,12 @@ Clock current_time;
 int main()
 {
     //static array of projectiles
-    Projectile arr[max_amount_of_projectiles];
+    Projectile arr_projectiles[MAX_AMOUNT_OF_PROJECTILES];
+
+    //static array of B17
+    B17 arr_B17[1];
+    B17 plane(rnd_int(-B17_MAX_VX, -B17_MIN_VX), rnd_int(-B17_ABS_MAX_OF_VY, B17_ABS_MAX_OF_VY), rnd_int(0, 400));
+    arr_B17[0] = plane;
 
     //shot sound
     SoundBuffer buffer;
@@ -75,14 +85,14 @@ int main()
             double time_btw_shots = last_shot.getElapsedTime().asMicroseconds();
             time_btw_shots = time_btw_shots / 1000000;
 
-            if (time_btw_shots > reload_time)
+            if (time_btw_shots > RELOAD_TIME)
             {
                 shotSound.play();
 
                 Projectile p(-spriteBarrel.getRotation());
-                arr[counter] = p;
+                arr_projectiles[counter] = p;
 
-                if (counter < (max_amount_of_projectiles - 1))
+                if (counter < (MAX_AMOUNT_OF_PROJECTILES - 1))
                 {
                     counter += 1;
                 }
@@ -93,7 +103,7 @@ int main()
 
                 last_shot.restart();
 
-                if (number_of_shots < max_amount_of_projectiles)
+                if (number_of_shots < MAX_AMOUNT_OF_PROJECTILES)
                 {
                     number_of_shots += 1;
                 }
@@ -107,7 +117,7 @@ int main()
 
         if (Keyboard::isKeyPressed(Keyboard::S) and spriteBarrel.getRotation() >= 270)
         {
-            spriteBarrel.rotate(-0.25);
+            spriteBarrel.rotate(-BARREL_ROTATING_SPEED);
             if (spriteBarrel.getRotation() < 270)
             {
                 spriteBarrel.setRotation(270);
@@ -116,7 +126,7 @@ int main()
 
         if (Keyboard::isKeyPressed(Keyboard::F) and spriteBarrel.getRotation() <= 359.5)
         {
-            spriteBarrel.rotate(0.25);
+            spriteBarrel.rotate(BARREL_ROTATING_SPEED);
             if (spriteBarrel.getRotation() > 359.5)
             {
                 spriteBarrel.setRotation(359.5);
@@ -134,10 +144,16 @@ int main()
         {
             for (int i = 0; i < number_of_shots; i++)
             {
-                window.draw(arr[i].spriteProjectile);
-                arr[i].upd(time_for_upd);
+                if (arr_projectiles[i].visible)
+                {
+                    window.draw(arr_projectiles[i].spriteProjectile);
+                    arr_projectiles[i].upd(time_for_upd);
+                }
             }
         }
+
+        window.draw(arr_B17[0].spriteB17);
+        arr_B17[0].spriteB17.move(arr_B17[0].vx, arr_B17[0].vy);
 
         window.draw(spriteBarrel);
         window.display();
