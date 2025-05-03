@@ -19,7 +19,7 @@ const int BARREL_L = 200;
 const int BARREL_H = 15;
 const double BARREL_ROTATING_SPEED = 0.35;
 double RELOAD_TIME = 3; //don't make const
-const int MAX_AMOUNT_OF_PROJECTILES = 400;
+const int MAX_AMOUNT_OF_PROJECTILES = 3;
 
 //data about B17
 const int B17_MAX_VX = 10;
@@ -27,19 +27,21 @@ const int B17_MIN_VX = 7;
 const int B17_ABS_MAX_OF_VY = 0;
 const int B17_H_MIN = 100;
 const int B17_H_MAX = 300;
-const int MAX_AMOUNT_OF_B17 = 10;
+const int MAX_AMOUNT_OF_B17 = 7;
+const double MIN_DELAY_BETWEEN_B17 = 1;
 
 
 
 bool do_spawn_B17()
 {
     int number = rnd_int(1, 10000);
-    return number > 9900;
+    return number > 9800;
 }
 
 
 
 Clock last_shot;
+Clock last_B17;
 Clock current_time;
 
 
@@ -130,12 +132,12 @@ int main()
             window.close();
         }
 
-        if (Keyboard::isKeyPressed(Keyboard::S) and spriteBarrel.getRotation() >= 270)
+        if (Keyboard::isKeyPressed(Keyboard::S) and spriteBarrel.getRotation() >= 280)
         {
             spriteBarrel.rotate(-BARREL_ROTATING_SPEED);
-            if (spriteBarrel.getRotation() < 270)
+            if (spriteBarrel.getRotation() < 280)
             {
-                spriteBarrel.setRotation(270);
+                spriteBarrel.setRotation(280);
             }
         }
 
@@ -166,8 +168,8 @@ int main()
         window.clear();
         window.draw(spriteBackground);
 
-        double time_for_upd = current_time.getElapsedTime().asMicroseconds();
-        time_for_upd = time_for_upd / 1000000;
+        double time_for_projectile = current_time.getElapsedTime().asMicroseconds();
+        time_for_projectile = time_for_projectile / 1000000;
         current_time.restart();
 
         //updating projectiles
@@ -178,20 +180,27 @@ int main()
                 if (arr_projectiles[i].visible)
                 {
                     window.draw(arr_projectiles[i].spriteProjectile);
-                    arr_projectiles[i].upd(time_for_upd);
+                    arr_projectiles[i].upd(time_for_projectile);
                 }
             }
         }
 
-        //updating B17
-        if (do_spawn_B17())
+        //spawning B17
+        double time_for_B17 = last_B17.getElapsedTime().asMicroseconds();
+        time_for_B17 /= 1000000;
+
+        if (do_spawn_B17() and time_for_B17 > MIN_DELAY_BETWEEN_B17)
         {
-            /*B17 plane(rnd_int(-B17_MAX_VX, -B17_MIN_VX), rnd_int(-B17_ABS_MAX_OF_VY, B17_ABS_MAX_OF_VY), rnd_int(B17_H_MIN, B17_H_MAX));
-            arr_B17[counter_B17] = plane;*/
-            arr_B17[counter_B17].textureB17.loadFromFile("./images/planes/b17.png");
-            arr_B17[counter_B17].spriteB17.setTexture(arr_B17[counter_B17].textureB17);
+            if (counter_B17 <= MAX_AMOUNT_OF_B17)
+            {
+                arr_B17[counter_B17].textureB17.loadFromFile("./images/planes/b17.png");
+                arr_B17[counter_B17].spriteB17.setTexture(arr_B17[counter_B17].textureB17);
+            }
+            arr_B17[counter_B17].visible = true;
+            arr_B17[counter_B17].x = 1920;
+            arr_B17[counter_B17].y = rnd_int(B17_H_MIN, B17_H_MAX);
             arr_B17[counter_B17].spriteB17.setTextureRect(IntRect(0, 0, L_B17, H_B17));
-            arr_B17[counter_B17].spriteB17.setPosition(1920, rnd_int(B17_H_MIN, B17_H_MAX));
+            arr_B17[counter_B17].spriteB17.setPosition(arr_B17[counter_B17].x, arr_B17[counter_B17].y);
             arr_B17[counter_B17].vx = rnd_int(-B17_MAX_VX, -B17_MIN_VX);
             arr_B17[counter_B17].vy = rnd_int(-B17_ABS_MAX_OF_VY, B17_ABS_MAX_OF_VY);
 
@@ -204,12 +213,26 @@ int main()
             {
                 number_of_B17 += 1;
             }
+
+            last_B17.restart();
         }
 
+        //updating B17
         for (int i = 0; i < number_of_B17; i++)
         {
-            window.draw(arr_B17[i].spriteB17);
-            arr_B17[i].spriteB17.move(arr_B17[i].vx, arr_B17[i].vy);
+            for (int j = 0; j < number_of_shots; j++)
+            {
+                if (arr_B17[i].spriteB17.getGlobalBounds().intersects(arr_projectiles[j].spriteProjectile.getGlobalBounds()))
+                {
+                    arr_B17[i].visible = false;
+                }
+            }
+
+            if (arr_B17[i].visible)
+            {
+                window.draw(arr_B17[i].spriteB17);
+                arr_B17[i].upd();
+            }
         }
 
         window.draw(spriteBarrel);

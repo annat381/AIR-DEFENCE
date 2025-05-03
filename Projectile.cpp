@@ -8,8 +8,8 @@ using namespace sf;
 class Projectile
 {
 public:
-    int x;
-    int y;
+    double x;
+    double y;
     double v;
     double vx;
     double vy;
@@ -21,7 +21,7 @@ public:
     Projectile(double angle)
     {
         visible = true;
-        v = 25;
+        v = 60;
         x = 35;
         y = 1040;
         vx = v * std::cos(angle * 3.14159 / 180);
@@ -45,6 +45,8 @@ public:
         vx = v * cs;
         vy += k * v * v * t * sn + 0.05;
         spriteProjectile.move(vx, vy);
+        x += vx;
+        y += vy;
     }
 
     void upd()

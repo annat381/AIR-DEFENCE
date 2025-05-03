@@ -10,8 +10,11 @@ const int H_B17 = 136;
 class B17
 {
 public:
-    int vx;
-    int vy;
+    double x;
+    double y;
+    double vx;
+    double vy;
+    bool visible;
     Texture textureB17;
     Sprite spriteB17;
 
@@ -33,11 +36,16 @@ public:
     void upd()
     {
         spriteB17.move(vx, vy);
+        x += vx;
+        y += vy;
     }
 
-    bool is_overlapping(Projectile p)
+    void is_overlapping(Projectile p)
     {
-        return true;
+        if (p.x >= x and p.x <= (x + 176) and p.x < 1920)
+        {
+            visible = false;
+        }
     }
 
     ~B17()
