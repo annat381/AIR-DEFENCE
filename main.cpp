@@ -27,6 +27,15 @@ const int B17_MIN_VX = 7;
 const int B17_ABS_MAX_OF_VY = 0;
 const int B17_H_MIN = 100;
 const int B17_H_MAX = 300;
+const int MAX_AMOUNT_OF_B17 = 10;
+
+
+
+bool do_spawn_B17()
+{
+    int number = rnd_int(1, 10000);
+    return number > 9900;
+}
 
 
 
@@ -41,9 +50,7 @@ int main()
     Projectile arr_projectiles[MAX_AMOUNT_OF_PROJECTILES];
 
     //static array of B17
-    B17 arr_B17[1];
-    B17 plane(rnd_int(-B17_MAX_VX, -B17_MIN_VX), rnd_int(-B17_ABS_MAX_OF_VY, B17_ABS_MAX_OF_VY), rnd_int(B17_H_MIN, B17_H_MAX));
-    arr_B17[0] = plane;
+    B17 arr_B17[MAX_AMOUNT_OF_B17];
 
     //shot sound
     SoundBuffer buffer;
@@ -72,8 +79,11 @@ int main()
     spriteBarrel.setPosition(30, 1040);
     spriteBarrel.rotate(315);
 
-    int counter = 0;
+    int counter_projectiles = 0;
     int number_of_shots = 0;
+
+    int counter_B17 = 0;
+    int number_of_B17 = 0;
 
     while (window.isOpen())
 	{
@@ -95,15 +105,15 @@ int main()
                 shotSound.play();
 
                 Projectile p(-spriteBarrel.getRotation());
-                arr_projectiles[counter] = p;
+                arr_projectiles[counter_projectiles] = p;
 
-                if (counter < (MAX_AMOUNT_OF_PROJECTILES - 1))
+                if (counter_projectiles < (MAX_AMOUNT_OF_PROJECTILES - 1))
                 {
-                    counter += 1;
+                    counter_projectiles += 1;
                 }
                 else
                 {
-                    counter = 0;
+                    counter_projectiles = 0;
                 }
 
                 last_shot.restart();
@@ -152,6 +162,7 @@ int main()
             }
         }
 
+        //drawing
         window.clear();
         window.draw(spriteBackground);
 
@@ -159,6 +170,7 @@ int main()
         time_for_upd = time_for_upd / 1000000;
         current_time.restart();
 
+        //updating projectiles
         if (number_of_shots > 0)
         {
             for (int i = 0; i < number_of_shots; i++)
@@ -171,8 +183,34 @@ int main()
             }
         }
 
-        window.draw(arr_B17[0].spriteB17);
-        arr_B17[0].spriteB17.move(arr_B17[0].vx, arr_B17[0].vy);
+        //updating B17
+        if (do_spawn_B17())
+        {
+            /*B17 plane(rnd_int(-B17_MAX_VX, -B17_MIN_VX), rnd_int(-B17_ABS_MAX_OF_VY, B17_ABS_MAX_OF_VY), rnd_int(B17_H_MIN, B17_H_MAX));
+            arr_B17[counter_B17] = plane;*/
+            arr_B17[counter_B17].textureB17.loadFromFile("./images/planes/b17.png");
+            arr_B17[counter_B17].spriteB17.setTexture(arr_B17[counter_B17].textureB17);
+            arr_B17[counter_B17].spriteB17.setTextureRect(IntRect(0, 0, L_B17, H_B17));
+            arr_B17[counter_B17].spriteB17.setPosition(1920, rnd_int(B17_H_MIN, B17_H_MAX));
+            arr_B17[counter_B17].vx = rnd_int(-B17_MAX_VX, -B17_MIN_VX);
+            arr_B17[counter_B17].vy = rnd_int(-B17_ABS_MAX_OF_VY, B17_ABS_MAX_OF_VY);
+
+            counter_B17 += 1;
+            if (counter_B17 == MAX_AMOUNT_OF_B17)
+            {
+                counter_B17 = 0;
+            }
+            if (number_of_B17 < MAX_AMOUNT_OF_B17)
+            {
+                number_of_B17 += 1;
+            }
+        }
+
+        for (int i = 0; i < number_of_B17; i++)
+        {
+            window.draw(arr_B17[i].spriteB17);
+            arr_B17[i].spriteB17.move(arr_B17[i].vx, arr_B17[i].vy);
+        }
 
         window.draw(spriteBarrel);
         window.display();
