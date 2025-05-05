@@ -20,7 +20,7 @@ const int BARREL_L = 200;
 const int BARREL_H = 15;
 const double BARREL_ROTATING_SPEED = 0.35;
 double RELOAD_TIME = 0.5; //don't make const
-const int MAX_AMOUNT_OF_PROJECTILES = 20;
+const int MAX_AMOUNT_OF_PROJECTILES = 100;
 
 //data about B17
 const int B17_MAX_VX = 10;
@@ -42,7 +42,7 @@ Explosion arr_explosions[MAX_AMOUNT_OF_EXPLOSIONS]; //must be global
 bool do_spawn_B17()
 {
     int number = rnd_int(1, 10000);
-    return number > 9800;
+    return number > 9850;
 }
 
 void create_explosion(int x, int y)
@@ -82,10 +82,16 @@ int main()
     B17 arr_B17[MAX_AMOUNT_OF_B17];
 
     //shot sound
-    SoundBuffer buffer;
-    buffer.loadFromFile("./audio/cannon/shot.wav");
+    SoundBuffer buffer1;
+    buffer1.loadFromFile("./audio/cannon/shot.wav");
     Sound shotSound;
-    shotSound.setBuffer(buffer);
+    shotSound.setBuffer(buffer1);
+
+    //explosion sound
+    SoundBuffer buffer2;
+    buffer2.loadFromFile("./audio/cannon/explosion.wav");
+    Sound explosionSound;
+    explosionSound.setBuffer(buffer2);
 
     //opening window
     RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "h", sf::Style::Fullscreen);
@@ -187,7 +193,7 @@ int main()
                 {
                     if (Keyboard::isKeyPressed(Keyboard::P))
                     {
-                        RELOAD_TIME = 0.01;
+                        RELOAD_TIME = 0.02;
                     }
                 }
             }
@@ -256,6 +262,7 @@ int main()
                 {
                     if (arr_B17[i].spriteB17.getGlobalBounds().intersects(arr_projectiles[j].spriteProjectile.getGlobalBounds()) and arr_projectiles[j].visible)
                     {
+                        explosionSound.play();
                         arr_B17[i].visible = false;
                         arr_projectiles[j].visible = false;
                         Vector2f p = arr_projectiles[j].spriteProjectile.getPosition();
