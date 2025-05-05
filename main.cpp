@@ -7,6 +7,7 @@
 #include <SFML/Audio.hpp>
 #include "B17.cpp"
 #include "rnd_int.cpp"
+#include "Explosion_test.cpp"
 using namespace sf;
 
 //data about screen
@@ -18,8 +19,8 @@ const int FRAMERATE_LIMIT = 60;
 const int BARREL_L = 200;
 const int BARREL_H = 15;
 const double BARREL_ROTATING_SPEED = 0.35;
-double RELOAD_TIME = 3; //don't make const
-const int MAX_AMOUNT_OF_PROJECTILES = 3;
+double RELOAD_TIME = 0.5; //don't make const
+const int MAX_AMOUNT_OF_PROJECTILES = 20;
 
 //data about B17
 const int B17_MAX_VX = 10;
@@ -30,12 +31,38 @@ const int B17_H_MAX = 300;
 const int MAX_AMOUNT_OF_B17 = 7;
 const double MIN_DELAY_BETWEEN_B17 = 1;
 
+//data about explosions
+const int MAX_AMOUNT_OF_EXPLOSIONS = 10;
+int counter_of_explosions = 0; //must be global
+int number_of_explosions = 0; //must be global
+Explosion arr_explosions[MAX_AMOUNT_OF_EXPLOSIONS]; //must be global
+
 
 
 bool do_spawn_B17()
 {
     int number = rnd_int(1, 10000);
     return number > 9800;
+}
+
+void create_explosion(int x, int y)
+{
+    arr_explosions[counter_of_explosions].counter = 1;
+    arr_explosions[counter_of_explosions].visible = true;
+    arr_explosions[counter_of_explosions].textureExplosion.loadFromFile("./images/explosion/explosion1.png");
+    arr_explosions[counter_of_explosions].spriteExplosion.setTexture(arr_explosions[counter_of_explosions].textureExplosion);
+    arr_explosions[counter_of_explosions].spriteExplosion.setTextureRect(IntRect(0, 0, L_EXPLOSION, H_EXPLOSION));
+    arr_explosions[counter_of_explosions].spriteExplosion.setPosition(x, y);
+
+    counter_of_explosions += 1;
+    if (counter_of_explosions == MAX_AMOUNT_OF_EXPLOSIONS)
+    {
+        counter_of_explosions = 0;
+    }
+    if (number_of_explosions < MAX_AMOUNT_OF_EXPLOSIONS)
+    {
+        number_of_explosions += 1;
+    }
 }
 
 
@@ -87,9 +114,11 @@ int main()
     int counter_B17 = 0;
     int number_of_B17 = 0;
 
+
+
     while (window.isOpen())
 	{
-
+        //event handler
 	    sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -164,15 +193,16 @@ int main()
             }
         }
 
-        //drawing
+        //rendering background
         window.clear();
         window.draw(spriteBackground);
 
+        //get time for projectiles
         double time_for_projectile = current_time.getElapsedTime().asMicroseconds();
         time_for_projectile = time_for_projectile / 1000000;
         current_time.restart();
 
-        //updating projectiles
+        //updating and rendering projectiles
         if (number_of_shots > 0)
         {
             for (int i = 0; i < number_of_shots; i++)
@@ -217,24 +247,42 @@ int main()
             last_B17.restart();
         }
 
-        //updating B17
+        //updating and rendering B17, checking for hits, creating explosions
         for (int i = 0; i < number_of_B17; i++)
         {
-            for (int j = 0; j < number_of_shots; j++)
-            {
-                if (arr_B17[i].spriteB17.getGlobalBounds().intersects(arr_projectiles[j].spriteProjectile.getGlobalBounds()))
-                {
-                    arr_B17[i].visible = false;
-                }
-            }
-
             if (arr_B17[i].visible)
             {
+                for (int j = 0; j < number_of_shots; j++)
+                {
+                    if (arr_B17[i].spriteB17.getGlobalBounds().intersects(arr_projectiles[j].spriteProjectile.getGlobalBounds()) and arr_projectiles[j].visible)
+                    {
+                        arr_B17[i].visible = false;
+                        arr_projectiles[j].visible = false;
+                        Vector2f p = arr_projectiles[j].spriteProjectile.getPosition();
+                        int x = (int) p.x;
+                        x -= L_EXPLOSION / 2;
+                        int y = (int) p.y;
+                        y -= H_EXPLOSION / 2;
+                        create_explosion(x, y);
+                    }
+                }
+
                 window.draw(arr_B17[i].spriteB17);
                 arr_B17[i].upd();
             }
         }
 
+        //updating and rendering explosions
+        for (int i = 0; i < number_of_explosions; i++)
+        {
+            if (arr_explosions[i].visible)
+            {
+                window.draw(arr_explosions[i].spriteExplosion);
+                arr_explosions[i].upd();
+            }
+        }
+
+        //rendering cannon
         window.draw(spriteBarrel);
         window.display();
 	}
