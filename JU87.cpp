@@ -8,11 +8,25 @@ const int H_JU87 = 1;
 
 double get_y(double x, double dx, double cx, double cy)
 {
-    x *= cx * 2 * 3.1415 / 1920;
+    x *= cx * 3.1415 / 1920;
     x += dx;
 
     double result = cy * std::cos(x) + 500;
     return result;
+}
+
+double get_angle(double x, double dx, double cx, double cy)
+{
+    x *= cx * 3.1415 / 1920;
+    x += dx;
+    double arctg = std::atan(-1 * std::sin(x));
+    arctg *= 90 / 3.1415;
+
+    if (arctg < 0)
+    {
+        return (360 + arctg);
+    }
+    return arctg;
 }
 
 
@@ -40,8 +54,9 @@ public:
 
     void upd()
     {
-        x -= vx;
+        x += vx;
         y = get_y(x, dx, cx, cy);
         spriteJU87.setPosition(x, y);
+        spriteJU87.setRotation(get_angle(x, dx, cx, cy));
     }
 };

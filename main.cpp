@@ -9,7 +9,7 @@
 #include "B17.cpp"
 #include "JU87.cpp"
 #include "rnd_int.cpp"
-#include "Explosion_test.cpp"
+#include "Explosion.cpp"
 using namespace sf;
 
 //data about screen
@@ -92,15 +92,16 @@ int main()
     JU87 arr_JU87[MAX_AMOUNT_OF_JU87];
 
     //test JU87
-    arr_JU87[0].x = 1000;
+    arr_JU87[0].x = 1920;
+    arr_JU87[0].y = 500;
+    arr_JU87[0].dx = 3.1415;
     arr_JU87[0].cx = 1;
-    arr_JU87[0].cy = 1;
-    arr_JU87[0].dx = 3.1415 / 2;
-    arr_JU87[0].textureJU87.loadFromFile("./images/planes/ju87.png");
+    arr_JU87[0].cy = 300;
+    arr_JU87[0].textureJU87.loadFromFile("./images/planes/b17.png");
     arr_JU87[0].spriteJU87.setTexture(arr_JU87[0].textureJU87);
-    arr_JU87[0].spriteJU87.setTextureRect(IntRect(0, 0, L_JU87, H_JU87));
-    arr_JU87[0].vx = -1;
-    arr_JU87[0].upd();
+    arr_JU87[0].spriteJU87.setTextureRect(IntRect(0, 0, L_B17, H_B17));
+    arr_JU87[0].vx = -8;
+    //arr_JU87[0].upd();
     arr_JU87[0].spriteJU87.setPosition(arr_JU87[0].x, arr_JU87[0].y);
     //-----------------
 
@@ -254,11 +255,11 @@ int main()
             {
                 arr_B17[counter_B17].textureB17.loadFromFile("./images/planes/b17.png");
                 arr_B17[counter_B17].spriteB17.setTexture(arr_B17[counter_B17].textureB17);
+                arr_B17[counter_B17].spriteB17.setTextureRect(IntRect(0, 0, L_B17, H_B17));
             }
             arr_B17[counter_B17].visible = true;
             arr_B17[counter_B17].x = 1920;
             arr_B17[counter_B17].y = rnd_int(B17_H_MIN, B17_H_MAX);
-            arr_B17[counter_B17].spriteB17.setTextureRect(IntRect(0, 0, L_B17, H_B17));
             arr_B17[counter_B17].spriteB17.setPosition(arr_B17[counter_B17].x, arr_B17[counter_B17].y);
             arr_B17[counter_B17].vx = rnd_int(-B17_MAX_VX, -B17_MIN_VX);
             arr_B17[counter_B17].vy = rnd_int(-B17_ABS_MAX_OF_VY, B17_ABS_MAX_OF_VY);
@@ -312,12 +313,12 @@ int main()
             }
         }
 
-        //rendering cannon
-        window.draw(spriteBarrel);
-        window.display();
-
         //test ju87
         arr_JU87[0].upd();
         window.draw(arr_JU87[0].spriteJU87);
+
+        //rendering cannon
+        window.draw(spriteBarrel);
+        window.display();
 	}
 }
