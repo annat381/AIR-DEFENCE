@@ -5,7 +5,9 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include "Projectile.cpp"
 #include "B17.cpp"
+#include "JU87.cpp"
 #include "rnd_int.cpp"
 #include "Explosion_test.cpp"
 using namespace sf;
@@ -30,11 +32,16 @@ const int B17_H_MIN = 100;
 const int B17_H_MAX = 300;
 const int MAX_AMOUNT_OF_B17 = 7;
 const double MIN_DELAY_BETWEEN_B17 = 1;
+const double B17_SPAWN_PROBABILITY = 0.01;
+
+//data about JU87
+const int MAX_AMOUNT_OF_JU87 = 7;
 
 //data about explosions
 const int MAX_AMOUNT_OF_EXPLOSIONS = 10;
 int counter_of_explosions = 0; //must be global
 int number_of_explosions = 0; //must be global
+
 Explosion arr_explosions[MAX_AMOUNT_OF_EXPLOSIONS]; //must be global
 
 
@@ -42,7 +49,7 @@ Explosion arr_explosions[MAX_AMOUNT_OF_EXPLOSIONS]; //must be global
 bool do_spawn_B17()
 {
     int number = rnd_int(1, 10000);
-    return number > 9850;
+    return number > (10000 * (1 - B17_SPAWN_PROBABILITY));
 }
 
 void create_explosion(int x, int y)
@@ -80,6 +87,22 @@ int main()
 
     //static array of B17
     B17 arr_B17[MAX_AMOUNT_OF_B17];
+
+    //static array of JU87
+    JU87 arr_JU87[MAX_AMOUNT_OF_JU87];
+
+    //test JU87
+    arr_JU87[0].x = 1000;
+    arr_JU87[0].cx = 1;
+    arr_JU87[0].cy = 1;
+    arr_JU87[0].dx = 3.1415 / 2;
+    arr_JU87[0].textureJU87.loadFromFile("./images/planes/ju87.png");
+    arr_JU87[0].spriteJU87.setTexture(arr_JU87[0].textureJU87);
+    arr_JU87[0].spriteJU87.setTextureRect(IntRect(0, 0, L_JU87, H_JU87));
+    arr_JU87[0].vx = -1;
+    arr_JU87[0].upd();
+    arr_JU87[0].spriteJU87.setPosition(arr_JU87[0].x, arr_JU87[0].y);
+    //-----------------
 
     //shot sound
     SoundBuffer buffer1;
@@ -292,5 +315,9 @@ int main()
         //rendering cannon
         window.draw(spriteBarrel);
         window.display();
+
+        //test ju87
+        arr_JU87[0].upd();
+        window.draw(arr_JU87[0].spriteJU87);
 	}
 }

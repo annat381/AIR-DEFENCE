@@ -1,9 +1,8 @@
 #include <SFML/Graphics.hpp>
-#include "Projectile.cpp"
 using namespace sf;
 
-const int L_B17 = 176;
-const int H_B17 = 136;
+const int L_B17 = 166;
+const int H_B17 = 50;
 
 
 
@@ -18,7 +17,7 @@ public:
     Texture textureB17;
     Sprite spriteB17;
 
-    B17(int v_x, int v_y, int h)
+    /*B17(int v_x, int v_y, int h)
     {
         textureB17.loadFromFile("./images/planes/b17.png");
         spriteB17.setTexture(textureB17);
@@ -26,7 +25,7 @@ public:
         spriteB17.setPosition(1920, h);
         vx = v_x;
         vy = v_y;
-    }
+    }*/
 
     B17()
     {
@@ -38,14 +37,6 @@ public:
         spriteB17.move(vx, vy);
         x += vx;
         y += vy;
-    }
-
-    void is_overlapping(Projectile p)
-    {
-        if (p.x >= x and p.x <= (x + 176) and p.x < 1920)
-        {
-            visible = false;
-        }
     }
 
     ~B17()
