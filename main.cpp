@@ -97,9 +97,9 @@ int main()
     arr_JU87[0].dx = 3.1415;
     arr_JU87[0].cx = 1;
     arr_JU87[0].cy = 300;
-    arr_JU87[0].textureJU87.loadFromFile("./images/planes/b17.png");
+    arr_JU87[0].textureJU87.loadFromFile("./images/planes/ju87.png");
     arr_JU87[0].spriteJU87.setTexture(arr_JU87[0].textureJU87);
-    arr_JU87[0].spriteJU87.setTextureRect(IntRect(0, 0, L_B17, H_B17));
+    arr_JU87[0].spriteJU87.setTextureRect(IntRect(0, 0, L_JU87, H_JU87));
     arr_JU87[0].vx = -8;
     //arr_JU87[0].upd();
     arr_JU87[0].spriteJU87.setPosition(arr_JU87[0].x, arr_JU87[0].y);

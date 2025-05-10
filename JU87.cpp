@@ -2,8 +2,8 @@
 #include <cmath>
 using namespace sf;
 
-const int L_JU87 = 1;
-const int H_JU87 = 1;
+const int L_JU87 = 85;
+const int H_JU87 = 36;
 
 
 double get_y(double x, double dx, double cx, double cy)
