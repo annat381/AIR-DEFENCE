@@ -11,7 +11,7 @@ double get_y(double x, double dx, double cx, double cy)
     x *= cx * 3.1415 / 1920;
     x += dx;
 
-    double result = cy * std::cos(x) + 500;
+    double result = cy * std::cos(x) + 700;
     return result;
 }
 
@@ -39,6 +39,7 @@ public:
     double cx;
     double cy;
     double dx;
+    bool visible;
     Texture textureJU87;
     Sprite spriteJU87;
 

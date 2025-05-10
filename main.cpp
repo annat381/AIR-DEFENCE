@@ -22,7 +22,7 @@ const int BARREL_L = 200;
 const int BARREL_H = 15;
 const double BARREL_ROTATING_SPEED = 0.35;
 double RELOAD_TIME = 0.5; //don't make const
-const int MAX_AMOUNT_OF_PROJECTILES = 100;
+const int MAX_AMOUNT_OF_PROJECTILES = 50;
 
 //data about B17
 const int B17_MAX_VX = 10;
@@ -32,10 +32,14 @@ const int B17_H_MIN = 100;
 const int B17_H_MAX = 300;
 const int MAX_AMOUNT_OF_B17 = 7;
 const double MIN_DELAY_BETWEEN_B17 = 1;
-const double B17_SPAWN_PROBABILITY = 0.01;
+const double B17_SPAWN_PROBABILITY = 0.005;
 
 //data about JU87
+const int JU87_MIN_VX = 5;
+const int JU87_MAX_VX = 7;
 const int MAX_AMOUNT_OF_JU87 = 7;
+const double JU87_SPAWN_PROBABILITY = 0.005;
+const double MIN_DELAY_BETWEEN_JU87 = 1;
 
 //data about explosions
 const int MAX_AMOUNT_OF_EXPLOSIONS = 10;
@@ -50,6 +54,12 @@ bool do_spawn_B17()
 {
     int number = rnd_int(1, 10000);
     return number > (10000 * (1 - B17_SPAWN_PROBABILITY));
+}
+
+bool do_spawn_JU87()
+{
+    int number = rnd_int(1, 10000);
+    return number > (10000 * (1 - JU87_SPAWN_PROBABILITY));
 }
 
 void create_explosion(int x, int y)
@@ -76,6 +86,7 @@ void create_explosion(int x, int y)
 
 Clock last_shot;
 Clock last_B17;
+Clock last_JU87;
 Clock current_time;
 
 
@@ -90,20 +101,6 @@ int main()
 
     //static array of JU87
     JU87 arr_JU87[MAX_AMOUNT_OF_JU87];
-
-    //test JU87
-    arr_JU87[0].x = 1920;
-    arr_JU87[0].y = 500;
-    arr_JU87[0].dx = 3.1415;
-    arr_JU87[0].cx = 1;
-    arr_JU87[0].cy = 300;
-    arr_JU87[0].textureJU87.loadFromFile("./images/planes/ju87.png");
-    arr_JU87[0].spriteJU87.setTexture(arr_JU87[0].textureJU87);
-    arr_JU87[0].spriteJU87.setTextureRect(IntRect(0, 0, L_JU87, H_JU87));
-    arr_JU87[0].vx = -8;
-    //arr_JU87[0].upd();
-    arr_JU87[0].spriteJU87.setPosition(arr_JU87[0].x, arr_JU87[0].y);
-    //-----------------
 
     //shot sound
     SoundBuffer buffer1;
@@ -143,6 +140,9 @@ int main()
 
     int counter_B17 = 0;
     int number_of_B17 = 0;
+
+    int counter_JU87 = 0;
+    int number_of_JU87 = 0;
 
 
 
@@ -224,7 +224,7 @@ int main()
         }
 
         //rendering background
-        window.clear();
+        //window.clear();
         window.draw(spriteBackground);
 
         //get time for projectiles
@@ -277,6 +277,40 @@ int main()
             last_B17.restart();
         }
 
+        //spawning JU87
+        double time_for_JU87 = last_JU87.getElapsedTime().asMicroseconds();
+        time_for_JU87 /= 1000000;
+
+        if (do_spawn_JU87() and time_for_JU87 > MIN_DELAY_BETWEEN_JU87)
+        {
+            if (counter_JU87 <= MAX_AMOUNT_OF_B17)
+            {
+                arr_JU87[counter_JU87].textureJU87.loadFromFile("./images/planes/ju87.png");
+                arr_JU87[counter_JU87].spriteJU87.setTexture(arr_JU87[counter_JU87].textureJU87);
+                arr_JU87[counter_JU87].spriteJU87.setTextureRect(IntRect(0, 0, L_JU87, H_JU87));
+            }
+            arr_JU87[counter_JU87].visible = true;
+            arr_JU87[counter_JU87].dx = 3.1415 / 16 * rnd_int(0, 32);
+            arr_JU87[counter_JU87].cx = 1;//will be changed
+            arr_JU87[counter_JU87].cy = rnd_int(100, 200);
+            arr_JU87[counter_JU87].x = 1920;
+            arr_JU87[counter_JU87].y = get_y(arr_JU87[counter_JU87].x, arr_JU87[counter_JU87].dx, arr_JU87[counter_JU87].cx, arr_JU87[counter_JU87].cy);
+            arr_JU87[counter_JU87].spriteJU87.setPosition(arr_JU87[counter_JU87].x, arr_JU87[counter_JU87].y);
+            arr_JU87[counter_JU87].vx = rnd_int(-JU87_MAX_VX, -JU87_MIN_VX);
+
+            counter_JU87 += 1;
+            if (counter_JU87 == MAX_AMOUNT_OF_JU87)
+            {
+                counter_JU87 = 0;
+            }
+            if (number_of_JU87 < MAX_AMOUNT_OF_JU87)
+            {
+                number_of_JU87 += 1;
+            }
+
+            last_JU87.restart();
+        }
+
         //updating and rendering B17, checking for hits, creating explosions
         for (int i = 0; i < number_of_B17; i++)
         {
@@ -303,6 +337,32 @@ int main()
             }
         }
 
+        //updating and rendering JU87, checking for hits, creating explosions
+        for (int i = 0; i < number_of_JU87; i++)
+        {
+            if (arr_JU87[i].visible)
+            {
+                for (int j = 0; j < number_of_shots; j++)
+                {
+                    if (arr_JU87[i].spriteJU87.getGlobalBounds().intersects(arr_projectiles[j].spriteProjectile.getGlobalBounds()) and arr_projectiles[j].visible)
+                    {
+                        explosionSound.play();
+                        arr_JU87[i].visible = false;
+                        arr_projectiles[j].visible = false;
+                        Vector2f p = arr_projectiles[j].spriteProjectile.getPosition();
+                        int x = (int) p.x;
+                        x -= L_EXPLOSION / 2;
+                        int y = (int) p.y;
+                        y -= H_EXPLOSION / 2;
+                        create_explosion(x, y);
+                    }
+                }
+
+                window.draw(arr_JU87[i].spriteJU87);
+                arr_JU87[i].upd();
+            }
+        }
+
         //updating and rendering explosions
         for (int i = 0; i < number_of_explosions; i++)
         {
@@ -312,10 +372,6 @@ int main()
                 arr_explosions[i].upd();
             }
         }
-
-        //test ju87
-        arr_JU87[0].upd();
-        window.draw(arr_JU87[0].spriteJU87);
 
         //rendering cannon
         window.draw(spriteBarrel);
