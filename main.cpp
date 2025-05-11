@@ -20,9 +20,9 @@ const int FRAMERATE_LIMIT = 60;
 //data about cannon
 const int BARREL_L = 200;
 const int BARREL_H = 15;
-const double BARREL_ROTATING_SPEED = 0.35;
+const double BARREL_ROTATING_SPEED = 0.5;
 double RELOAD_TIME = 0.5; //don't make const
-const int MAX_AMOUNT_OF_PROJECTILES = 50;
+const int MAX_AMOUNT_OF_PROJECTILES = 70;
 
 //data about B17
 const int B17_MAX_VX = 10;
@@ -48,7 +48,45 @@ int number_of_explosions = 0; //must be global
 
 Explosion arr_explosions[MAX_AMOUNT_OF_EXPLOSIONS]; //must be global
 
+//opening window
+RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "h", sf::Style::Fullscreen);
 
+//function for pause
+void handle_pause(Font font) {
+    sf::Text pauseText("PAUSE", font, 60);
+    pauseText.setFillColor(sf::Color::Red);
+    pauseText.setPosition(
+        static_cast<float>(window.getSize().x / 2 - static_cast<int>(pauseText.getLocalBounds().width / 2)),
+        static_cast<float>(window.getSize().y / 2 - static_cast<int>(pauseText.getLocalBounds().height / 2))
+    );
+
+    bool paused = true;
+    sf::Clock pauseClock;
+    pauseClock.restart();
+
+    while (paused) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+        // выход из паузы, нажать Enter
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
+            paused = false;
+        }
+
+        //дефолтный выход через 5 секунд
+        /*if (pauseClock.getElapsedTime().asSeconds() >= 5.0f) {
+            paused = false;
+        }*/
+
+        //отрисовываем и очищаем экран паузы
+        //window.clear(sf::Color(30, 30, 30));
+        window.draw(pauseText);
+        window.display();
+    }
+}
 
 bool do_spawn_B17()
 {
@@ -102,7 +140,7 @@ int main()
     //static array of JU87
     JU87 arr_JU87[MAX_AMOUNT_OF_JU87];
 
-    //shot sound
+    /*//shot sound
     SoundBuffer buffer1;
     buffer1.loadFromFile("./audio/cannon/shot.wav");
     Sound shotSound;
@@ -112,11 +150,7 @@ int main()
     SoundBuffer buffer2;
     buffer2.loadFromFile("./audio/cannon/explosion.wav");
     Sound explosionSound;
-    explosionSound.setBuffer(buffer2);
-
-    //opening window
-    RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "h", sf::Style::Fullscreen);
-    window.setFramerateLimit(FRAMERATE_LIMIT);
+    explosionSound.setBuffer(buffer2);*/
 
     //creating background
     Texture textureBackground;
@@ -126,7 +160,13 @@ int main()
     spriteBackground.setTextureRect(IntRect(0, 0, WIDTH, HEIGHT));
     spriteBackground.setPosition(0, 0);
 
-    //creating barrel
+    //creating cannon
+    Texture textureCarriage;
+    textureCarriage.loadFromFile("./images/cannon/85mm_1.png");
+    Sprite spriteCarriage;
+    spriteCarriage.setTexture(textureCarriage);
+    spriteCarriage.setTextureRect(IntRect(0, 0, 180, 140));
+    spriteCarriage.setPosition(0, 1050);
     Texture textureBarrel;
     textureBarrel.loadFromFile("./images/cannon/no_dots1.png");
     Sprite spriteBarrel;
@@ -134,6 +174,13 @@ int main()
     spriteBarrel.setTextureRect(IntRect(0, 0, BARREL_L, BARREL_H));
     spriteBarrel.setPosition(30, 1040);
     spriteBarrel.rotate(315);
+
+    //setting framerate limit
+    window.setFramerateLimit(FRAMERATE_LIMIT);
+
+    //creating font1
+    Font font1;
+    font1.loadFromFile("./fonts/Nasa21.ttf");
 
     int counter_projectiles = 0;
     int number_of_shots = 0;
@@ -144,7 +191,31 @@ int main()
     int counter_JU87 = 0;
     int number_of_JU87 = 0;
 
+    int total_amount_of_shots = 0;
+    int total_amount_of_destroyed_planes = 0;
 
+    //menu
+    bool inMenu = true;
+    Texture textureMenu;
+    textureMenu.loadFromFile("./images/menu/menu.jpg");
+    Sprite spriteMenuBackground;
+    spriteMenuBackground.setTexture(textureMenu);
+    spriteMenuBackground.setTextureRect(IntRect(0, 0, WIDTH, HEIGHT));
+    spriteMenuBackground.setPosition(0, 0);
+    Texture textureStartButton;
+    textureStartButton.loadFromFile("./images/menu/startbutton.jpg");
+    Sprite spriteStartButton;
+    spriteStartButton.setTexture(textureStartButton);
+    spriteStartButton.setTextureRect(IntRect(0, 0, 276, 63));
+    spriteStartButton.setPosition(822, 750);
+
+    //creating texts
+    Text textPlanesDestroyed("Planes destroyed: " + std::to_string(total_amount_of_destroyed_planes), font1, 20);
+    textPlanesDestroyed.setFillColor(sf::Color::Red);
+    textPlanesDestroyed.setPosition(0, 0);
+    Text textShotsMade("Shots made: " + std::to_string(total_amount_of_shots), font1, 20);
+    textShotsMade.setFillColor(sf::Color::Red);
+    textShotsMade.setPosition(0, 30);
 
     while (window.isOpen())
 	{
@@ -156,6 +227,33 @@ int main()
 				window.close();
 		}
 
+		while (inMenu)
+        {
+            bool t = false;
+            sf::Event event;
+
+            window.clear();
+            window.draw(spriteMenuBackground);
+            window.draw(spriteStartButton);
+            window.display();
+
+            Vector2i p = Mouse::getPosition();
+
+            if (p.x > 822 and p.x < (822 + 276) and p.y > 750 and p.y < (750 + 63))
+            {
+                t = true;
+            }
+            else
+            {
+                t = false;
+            }
+
+            if (t and sf::Mouse::isButtonPressed(sf::Mouse::Left))
+            {
+                inMenu = false;
+            }
+        }
+
 		if (Keyboard::isKeyPressed(Keyboard::Space))
         {
             double time_btw_shots = last_shot.getElapsedTime().asMicroseconds();
@@ -163,7 +261,8 @@ int main()
 
             if (time_btw_shots > RELOAD_TIME)
             {
-                shotSound.play();
+                //shotSound.play();
+                total_amount_of_shots += 1;
 
                 Projectile p(-spriteBarrel.getRotation());
                 arr_projectiles[counter_projectiles] = p;
@@ -189,6 +288,11 @@ int main()
 		if (Keyboard::isKeyPressed(Keyboard::Escape))
         {
             window.close();
+        }
+
+        if (Keyboard::isKeyPressed(Keyboard::Y))
+        {
+            handle_pause(font1);
         }
 
         if (Keyboard::isKeyPressed(Keyboard::S) and spriteBarrel.getRotation() >= 280)
@@ -224,7 +328,7 @@ int main()
         }
 
         //rendering background
-        //window.clear();
+        window.clear();
         window.draw(spriteBackground);
 
         //get time for projectiles
@@ -320,9 +424,10 @@ int main()
                 {
                     if (arr_B17[i].spriteB17.getGlobalBounds().intersects(arr_projectiles[j].spriteProjectile.getGlobalBounds()) and arr_projectiles[j].visible)
                     {
-                        explosionSound.play();
+                        //explosionSound.play();
                         arr_B17[i].visible = false;
                         arr_projectiles[j].visible = false;
+                        total_amount_of_destroyed_planes += 1;
                         Vector2f p = arr_projectiles[j].spriteProjectile.getPosition();
                         int x = (int) p.x;
                         x -= L_EXPLOSION / 2;
@@ -346,9 +451,10 @@ int main()
                 {
                     if (arr_JU87[i].spriteJU87.getGlobalBounds().intersects(arr_projectiles[j].spriteProjectile.getGlobalBounds()) and arr_projectiles[j].visible)
                     {
-                        explosionSound.play();
+                        //explosionSound.play();
                         arr_JU87[i].visible = false;
                         arr_projectiles[j].visible = false;
+                        total_amount_of_destroyed_planes += 1;
                         Vector2f p = arr_projectiles[j].spriteProjectile.getPosition();
                         int x = (int) p.x;
                         x -= L_EXPLOSION / 2;
@@ -373,8 +479,15 @@ int main()
             }
         }
 
+        //updating and rendering texts
+        textPlanesDestroyed.setString("Planes destroyed: " + std::to_string(total_amount_of_destroyed_planes));
+        window.draw(textPlanesDestroyed);
+        textShotsMade.setString("Shots made: " + std::to_string(total_amount_of_shots));
+        window.draw(textShotsMade);
+
         //rendering cannon
         window.draw(spriteBarrel);
+        window.draw(spriteCarriage);
         window.display();
 	}
 }

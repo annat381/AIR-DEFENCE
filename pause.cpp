@@ -1,7 +1,6 @@
-#include "pause.hpp"
 #include <SFML/Graphics.hpp>
 
-void handle_pause(sf::RenderWindow& window, sf::Font& font) {
+void handle_pause(sf::RenderWindow& window, sf::Font font) {
     sf::Text pauseText("ПАУЗА", font, 60);
     pauseText.setFillColor(sf::Color::Red);
     pauseText.setPosition(
@@ -26,12 +25,12 @@ void handle_pause(sf::RenderWindow& window, sf::Font& font) {
         }
 
         //дефолтный выход через 5 секунд
-        if (pauseClock.getElapsedTime().asSeconds() >= 5.0f) {
+        /*if (pauseClock.getElapsedTime().asSeconds() >= 5.0f) {
             paused = false;
-        }
+        }*/
 
         //отрисовываем и очищаем экран паузы
-        window.clear(sf::Color(30, 30, 30));
+        //window.clear(sf::Color(30, 30, 30));
         window.draw(pauseText);
         window.display();
     }
