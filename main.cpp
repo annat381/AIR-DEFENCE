@@ -20,7 +20,7 @@ const int FRAMERATE_LIMIT = 60;
 //data about cannon
 const int BARREL_L = 200;
 const int BARREL_H = 15;
-const double BARREL_ROTATING_SPEED = 0.5;
+const double BARREL_ROTATING_SPEED = 0.45;
 double RELOAD_TIME = 0.5; //don't make const
 const int MAX_AMOUNT_OF_PROJECTILES = 70;
 
@@ -35,8 +35,8 @@ const double MIN_DELAY_BETWEEN_B17 = 1;
 const double B17_SPAWN_PROBABILITY = 0.005;
 
 //data about JU87
-const int JU87_MIN_VX = 5;
-const int JU87_MAX_VX = 7;
+const int JU87_MIN_VX = 6;
+const int JU87_MAX_VX = 8;
 const int MAX_AMOUNT_OF_JU87 = 7;
 const double JU87_SPAWN_PROBABILITY = 0.005;
 const double MIN_DELAY_BETWEEN_JU87 = 1;
@@ -166,13 +166,13 @@ int main()
     Sprite spriteCarriage;
     spriteCarriage.setTexture(textureCarriage);
     spriteCarriage.setTextureRect(IntRect(0, 0, 180, 140));
-    spriteCarriage.setPosition(0, 1050);
+    spriteCarriage.setPosition(-50, 957);
     Texture textureBarrel;
     textureBarrel.loadFromFile("./images/cannon/no_dots1.png");
     Sprite spriteBarrel;
     spriteBarrel.setTexture(textureBarrel);
     spriteBarrel.setTextureRect(IntRect(0, 0, BARREL_L, BARREL_H));
-    spriteBarrel.setPosition(30, 1040);
+    spriteBarrel.setPosition(30, 1037);
     spriteBarrel.rotate(315);
 
     //setting framerate limit
@@ -395,7 +395,7 @@ int main()
             }
             arr_JU87[counter_JU87].visible = true;
             arr_JU87[counter_JU87].dx = 3.1415 / 16 * rnd_int(0, 32);
-            arr_JU87[counter_JU87].cx = 1;//will be changed
+            arr_JU87[counter_JU87].cx = 1;
             arr_JU87[counter_JU87].cy = rnd_int(100, 200);
             arr_JU87[counter_JU87].x = 1920;
             arr_JU87[counter_JU87].y = get_y(arr_JU87[counter_JU87].x, arr_JU87[counter_JU87].dx, arr_JU87[counter_JU87].cx, arr_JU87[counter_JU87].cy);
